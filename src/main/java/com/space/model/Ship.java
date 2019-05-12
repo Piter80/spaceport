@@ -1,15 +1,9 @@
 package com.space.model;
-
-
-import com.space.model.ShipType;
-
 import javax.persistence.*;
 import java.util.Date;
 @Entity
 @Table(name="ship")
 public class Ship {
-    private static int currentYear = 3019;
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -30,10 +24,6 @@ public class Ship {
     Integer crewSize;
     @Column(name="rating")
     Double rating;
-
-    public static int getCurrentYear() {
-        return currentYear;
-    }
 
     public Long getId() {
         return id;
@@ -105,13 +95,6 @@ public class Ship {
 
     public void setRating(Double rating) {
         this.rating = rating;
-    }
-
-    private Double getCurrentRating() {
-        Double isUsed = (this.isUsed) ? 0.5 : 1.0;
-        Double firstPart = 80*this.speed*isUsed;
-        Double secondPart = currentYear - this.prodDate.getYear() +1.0;
-        return  firstPart/secondPart;
     }
 
     @Override
