@@ -8,9 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service
 @Transactional
@@ -124,7 +122,10 @@ public class ShipServiceViaRepository implements ShipService {
     }
 
     private boolean isValidDate (Date date) {
-        if (date == null || date.getYear() < 2800 || date.getYear() > 3019) return false;
+        Calendar calendar = new GregorianCalendar();
+        calendar.setTime(date);
+        int yearOfCreation = calendar.get(Calendar.YEAR);
+        if (date == null || yearOfCreation < 2800 || yearOfCreation > 3019) return false;
         return true;
     }
 
