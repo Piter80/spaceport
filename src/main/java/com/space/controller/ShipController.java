@@ -82,10 +82,10 @@ public class ShipController {
     }
 
     @RequestMapping(path = "/ships/{id}", method = RequestMethod.GET)
-    public ResponseEntity<Ship> getShip(@PathVariable(value = "id") String pathId) {
-        Long id = Long.parseLong(pathId);
-        if (id == null || id <= 0)  return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        Ship ship = service.getOne(id);
+    public ResponseEntity<Ship> getShip(@PathVariable(value = "id") String id) {
+        Long convertedId = convertToLong(id);
+        if (convertedId == null || convertedId <= 0)  return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        Ship ship = service.getOne(convertedId);
         if (ship == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         return new ResponseEntity<>(ship, HttpStatus.OK);
     }
@@ -98,13 +98,32 @@ public class ShipController {
     ) {
         ResponseEntity<Ship> shipToUpdate = getShip(id);
         Ship shipForSave = shipToUpdate.getBody();
-        if (shipForSave == null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        if (shipForSave == null) return shipToUpdate;
+        Ship savedShip;
         try {
-            shipForSave = service.update(shipForSave, ship);
+            savedShip = service.update(shipForSave, ship);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(shipForSave, HttpStatus.OK);
+        return new ResponseEntity<>(savedShip, HttpStatus.OK);
     }
 
+    @RequestMapping(path = "/ships/{id}", method = RequestMethod.DELETE)
+    public ResponseEntity<Ship> deleteShip(@PathVariable(value = "id") String id) {
+        Long idConverted = convertToLong(id);
+        if (idConverted == null || idConverted == 0)  return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        ResponseEntity<Ship> ship = getShip(id);
+        Ship  shipForDel= ship.getBody();
+        if (shipForDel == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        service.delete(shipForDel);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    private Long convertToLong (String id) {
+        try {
+            return Long.parseLong(id);
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
 }

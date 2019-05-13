@@ -29,33 +29,65 @@ public class ShipServiceViaRepository implements ShipService {
     }
 
     @Override
-    public Ship update(Ship old, Ship updated) {
-        if (isValidShip(updated)) {
-            String name = updated.getName();
-            old.setName(name);
-            String planet = updated.getPlanet();
-            old.setPlanet(planet);
-            ShipType shipType = updated.getShipType();
-            old.setShipType(shipType);
-            Date prodDate = updated.getProdDate();
-            old.setProdDate(prodDate);
-            Boolean isUsed = true;
-            if (updated.getUsed() != null) {
-                isUsed = updated.getUsed();
-            }
-            old.setUsed(isUsed);
-            Double speed = updated.getSpeed();
-            old.setSpeed(speed);
-            Integer crewSize = updated.getCrewSize();
-            old.setCrewSize(crewSize);
-            Double rating = calculateRating(speed, prodDate, isUsed);
-            old.setRating(rating);
-            save(old);
-            return old;
-        }
-        return null;
+    public Ship update(Ship oldShip, Ship newShip) throws IllegalArgumentException {
+        boolean shouldChangeRating = false;
 
+        String name = newShip.getName();
+        if (name != null) {
+            if (isValidString(name)) {
+                oldShip.setName(name);
+            } else {
+                throw new IllegalArgumentException();
+            }
         }
+        String planet = newShip.getPlanet();
+        if (planet != null) {
+            if (isValidString(planet)) {
+                oldShip.setPlanet(planet);
+            } else {
+                throw new IllegalArgumentException();
+            }
+        }
+        if (newShip.getShipType() != null) {
+            oldShip.setShipType(newShip.getShipType());
+        }
+        Date prodDate = newShip.getProdDate();
+        if (prodDate != null) {
+            if (isValidDate(prodDate)) {
+                oldShip.setProdDate(prodDate);
+                shouldChangeRating = true;
+            } else {
+                throw new IllegalArgumentException();
+            }
+        }
+        if (newShip.getUsed() != null) {
+            oldShip.setUsed(newShip.getUsed());
+            shouldChangeRating = true;
+        }
+        Double speed = newShip.getSpeed();
+        if (speed != null) {
+            if (isValidSpeed(speed)) {
+                oldShip.setSpeed(speed);
+                shouldChangeRating = true;
+            } else {
+                throw new IllegalArgumentException();
+            }
+        }
+        Integer crewSize = newShip.getCrewSize();
+        if (crewSize != null) {
+            if (isValidCrewSize(crewSize)) {
+                oldShip.setCrewSize(crewSize);
+            } else {
+                throw new IllegalArgumentException();
+            }
+        }
+        if (shouldChangeRating) {
+            double rating = calculateRating(oldShip.getSpeed(), oldShip.getProdDate(), oldShip.getUsed());
+            oldShip.setRating(rating);
+        }
+        repository.save(oldShip);
+        return oldShip;
+    }
 
     @Override
     public void delete(Ship ship) {
@@ -170,7 +202,7 @@ public class ShipServiceViaRepository implements ShipService {
     }
 
     private boolean isValidString(String str) {
-        if (str == null || str.length() > 50 || str.isEmpty()) return false;
+        if (str == null || str.length() >= 50 || str.isEmpty()) return false;
         return true;
     }
 }
