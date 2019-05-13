@@ -30,8 +30,29 @@ public class ShipServiceViaRepository implements ShipService {
 
     @Override
     public Ship update(Ship old, Ship updated) {
+        if (isValidShip(updated)) {
+            String name = updated.getName();
+            old.setName(name);
+            String planet = updated.getPlanet();
+            old.setPlanet(planet);
+            ShipType shipType = updated.getShipType();
+            old.setShipType(shipType);
+            Date prodDate = updated.getProdDate();
+            old.setProdDate(prodDate);
+            Boolean isUsed = updated.getUsed() != null;
+            old.setUsed(isUsed);
+            Double speed = updated.getSpeed();
+            old.setSpeed(speed);
+            Integer crewSize = updated.getCrewSize();
+            old.setCrewSize(crewSize);
+            Double rating = calculateRating(speed, prodDate, isUsed);
+            old.setRating(rating);
+            save(old);
+            return old;
+        }
         return null;
-    }
+
+        }
 
     @Override
     public void delete(Ship ship) {

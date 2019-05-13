@@ -90,4 +90,21 @@ public class ShipController {
         return new ResponseEntity<>(ship, HttpStatus.OK);
     }
 
+    @RequestMapping(path = "/ships/{id}", method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseEntity<Ship> updateShip(
+            @PathVariable(value = "id") String id,
+            @RequestBody Ship ship
+    ) {
+        ResponseEntity<Ship> shipToUpdate = getShip(id);
+        Ship shipForSave = shipToUpdate.getBody();
+        if (shipForSave == null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        try {
+            shipForSave = service.update(shipForSave, ship);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(shipForSave, HttpStatus.OK);
+    }
+
 }
