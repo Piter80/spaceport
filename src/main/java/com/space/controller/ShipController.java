@@ -74,10 +74,10 @@ public class ShipController {
         if (!service.isValidShip(ship)) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
         if (ship.getUsed() == null) ship.setUsed(false);
-        ship.setSpeed(ship.getSpeed());
         double rating = service.calculateRating(ship.getSpeed(), ship.getProdDate(), ship.getUsed());
         ship.setRating(rating);
         Ship savedShip = service.save(ship);
+        if (savedShip == null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         return new ResponseEntity<>(savedShip, HttpStatus.OK);
     }
 

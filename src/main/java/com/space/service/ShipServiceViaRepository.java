@@ -20,7 +20,8 @@ public class ShipServiceViaRepository implements ShipService {
 
     @Override
     public Ship save(Ship ship) {
-        return repository.save(ship);
+        if (isValidShip(ship)) return repository.save(ship);
+        return null;
     }
 
     @Override
@@ -101,11 +102,11 @@ public class ShipServiceViaRepository implements ShipService {
     @Override
     public boolean isValidShip(Ship ship) {
         if (
-                ship != null ||
-                isValidString(ship.getName()) ||
-                isValidString(ship.getPlanet()) ||
-                isValidDate(ship.getProdDate()) ||
-                isValidSpeed(ship.getSpeed()) ||
+                ship != null &&
+                isValidString(ship.getName()) &&
+                isValidString(ship.getPlanet()) &&
+                isValidDate(ship.getProdDate()) &&
+                isValidSpeed(ship.getSpeed()) &&
                 isValidCrewSize(ship.getCrewSize())
 
         ) return true;
