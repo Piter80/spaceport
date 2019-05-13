@@ -81,4 +81,13 @@ public class ShipController {
         return new ResponseEntity<>(savedShip, HttpStatus.OK);
     }
 
+    @RequestMapping(path = "/ships/{id}", method = RequestMethod.GET)
+    public ResponseEntity<Ship> getShip(@PathVariable(value = "id") String pathId) {
+        Long id = Long.parseLong(pathId);
+        if (id == null || id <= 0)  return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        Ship ship = service.getOne(id);
+        if (ship == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(ship, HttpStatus.OK);
+    }
+
 }
