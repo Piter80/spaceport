@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 @Service
 @Transactional
@@ -52,14 +53,26 @@ public class ShipServiceViaRepository implements ShipService {
             Double minRating,
             Double maxRating
     ) {
-        List<Ship> allShips = repository.findAll();
-
-
         Date prodDateBefore = (before == null ? null : new Date(before));
         Date prodDateAfter = (after == null ? null : new Date(after));
 
-
-        return repository.findAll();
+        List<Ship> allFoundedShips = new ArrayList<>();
+        repository.findAll().forEach(ship -> {
+            if (name != null && !ship.getName().contains(name)) return;
+            if (planet != null && !ship.getPlanet().contains(planet)) return;
+            if (shipType != null && ship.getShipType() != shipType) return;
+            if (after != null && ship.getProdDate().before(prodDateAfter)) return;
+            if (before != null && ship.getProdDate().after(prodDateBefore)) return;
+            if (isUsed != null && ship.getUsed() != isUsed) return;
+            if (minSpeed != null && ship.getSpeed().compareTo(minSpeed) < 0) return;
+            if (maxSpeed != null && ship.getSpeed().compareTo(maxSpeed) > 0 ) return;
+            if (minCrewSize != null && ship.getCrewSize() < minCrewSize) return;
+            if (maxCrewSize != null && ship.getCrewSize() > maxCrewSize) return;
+            if (minRating != null && ship.getRating().compareTo(minRating) < 0) return;
+            if (maxRating != null && ship.getRating().compareTo(maxRating) > 0) return;
+             allFoundedShips.add(ship);
+        });
+        return allFoundedShips;
     }
 
     @Override
