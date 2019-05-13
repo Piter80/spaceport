@@ -39,7 +39,10 @@ public class ShipServiceViaRepository implements ShipService {
             old.setShipType(shipType);
             Date prodDate = updated.getProdDate();
             old.setProdDate(prodDate);
-            Boolean isUsed = updated.getUsed() != null;
+            Boolean isUsed = true;
+            if (updated.getUsed() != null) {
+                isUsed = updated.getUsed();
+            }
             old.setUsed(isUsed);
             Double speed = updated.getSpeed();
             old.setSpeed(speed);
@@ -127,7 +130,10 @@ public class ShipServiceViaRepository implements ShipService {
     public double calculateRating(Double speed, Date prodDate, boolean isUsed) {
             Double used = isUsed ? 0.5 : 1.0;
             Double firstPart = 80*speed*used;
-            Double secondPart = 3019 - prodDate.getYear() +1.0;
+            Calendar calendar = new GregorianCalendar();
+            calendar.setTime(prodDate);
+            int prodYear = calendar.get(Calendar.YEAR);
+            Double secondPart = 3019 - prodYear +1.0;
             return  Math.round(firstPart/secondPart *100) /100.0;
     }
 
